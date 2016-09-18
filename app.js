@@ -1,10 +1,86 @@
-var express = require('express');
-var app = express();
+var app = require('http').createServer(handler);
+var io = require('socket.io')(app);
+var fs = require('fs');
 
-app.get('/', function(req, res){
-    res.send('hello world!');
+var Engine = require('tingodb')(),
+assert = require('assert');
+
+var db = new Engine.Db(__dirname + '/db', {});
+
+function handler(req, res) {
+	fs.readFile(__dirname + '/public/index-tingosocketchart.html',
+		function(err, data){
+			res.writeHead(200);
+			res.end(data);
+		});
+	console.log("user connected");
+}
+
+app.listen(8000);
+
+io.on('connect', function(socket){
+	console.log("user connected to socket");
+	
+	socket.on('messageFromClientToServer', function(data){
+		console.log(data);
+	});
+
+	var sendLatestSamples = setInterval(function(){
+		getLatestSamples(100, function(results){
+			var values = []
+			for(var i=0; i<results.length; i++)
+			{
+				values.push(results[i].value);
+			}
+			socket.emit('latestSamples', values);
+			console.log(values);
+		});
+	}, 1000);
+	
+	socket.on('disconnect', function(){
+		console.log('user disconnected from socket');
+		clearInterval(sendLatestSamples);
+	});
 });
 
-app.listen(3000, function(){
-    console.log('Example app listening on port 3000!')
-});
+var insertSample = function(theValue, theDate){
+	var sampleCollection = db.collection('chartStuff');
+	sampleCollection.insert({
+		'value': theValue,
+		'datetime': theDate
+	}, function(err, docResult){
+		assert.equal(err, null);
+		console.log("Inserted a sample into the chartStuff collection.")
+	});
+};
+
+setInterval(function(){
+
+	var makeValue = Math.random() * 100;
+	var getDate = new Date();
+	insertSample(makeValue, getDate);
+}, 1000);
+
+var getLatestSamples = function(theCount, callback){
+	var sampleCollection = db.collection('chartStuff');
+	sampleCollection
+		.find()
+		.sort({'datetime': -1})
+		.limit(theCount)
+		.toArray(function(err,docList){
+			callback(docList);
+		});
+};
+
+
+
+//var express = require('express');
+//var app = express();
+
+//app.get('/', function(req, res){
+//    res.send('hello world!');
+//});
+
+//app.listen(3000, function(){
+//    console.log('Example app listening on port 3000!')
+//});
