@@ -7,7 +7,13 @@ raspi.init(function(){
 });
 
 setInterval(function(){
-	console.log(i2c.readWordSync(0x40));
+	var raw_data = i2c.readWordSync(0x40);
+	console.log("raw_data");
+	console.log(raw_data);
+	var temp = (raw_data >> 2 ) * 0.03125;
+	
+	console.log("DieTemp")
+	console.log(temp);
 }, 1000);
 
 
