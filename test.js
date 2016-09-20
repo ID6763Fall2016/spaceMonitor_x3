@@ -13,7 +13,7 @@ var reading = 0;
 setInterval(function(){
    if(!adc.busy){
 	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-		console.log(data);
+		console.log(data[1]);
 		});  
 	}
 	
