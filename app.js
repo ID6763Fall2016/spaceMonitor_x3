@@ -89,17 +89,18 @@ setInterval(function(){
     var vibr = 0;
     adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
         vibr = data;
-        console.log(vibr);
-    }); 
-    console.log(vibr); 
-    // get temperature data from sensor
-    var raw_data = i2c.readWordSync(0x40);
-    var temp = (raw_data >> 2) * 0.03215;
+    
+        // get temperature data from sensor
+        var raw_data = i2c.readWordSync(0x40);
+        var temp = (raw_data >> 2) * 0.03215;
 
-    // get motion data from sensor
-    var motion = pir_pin.readSync();
-	var getDate = new Date();
-	insertSample(temp, vibr, motion, getDate);
+        // get motion data from sensor
+        var motion = pir_pin.readSync();
+        var getDate = new Date();
+        insertSample(temp, vibr, motion, getDate);
+
+    }); 
+    
 }, 1000);
 
 var getLatestSamples = function(theCount, callback){
