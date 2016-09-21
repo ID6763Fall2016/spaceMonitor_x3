@@ -37,7 +37,8 @@ setInterval(function(){
 	console.log("DieTemp")
 	console.log(temp);
 
-	pir_pin.readSync();
+	console.log("------ motion sensor -------");
+	console.log(pir_pin.readSync());
 
 }, 1000);
 
@@ -46,11 +47,4 @@ setInterval(function(){
 var GPIO = require('onoff').Gpio,
         pir_pin = new GPIO(18, 'in', 'both');
 
-function printState(err, state){
-	var dt = new Date();
-	console.log("------ motion sensor -------");
-	console.log(dt.toLocaleDateString() + "  " + dt.toLocaleTimeString());
-	console.log(state);
-}
-// pir_pin.watch(printState);
 
