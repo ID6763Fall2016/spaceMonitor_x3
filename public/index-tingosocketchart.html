@@ -1,19 +1,101 @@
 <!DOCTYPE html>
 <html>
- <head>
- <title>My Tingo Charts</title>
- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
- <script src="/socket.io/socket.io.js"></script>
- </head>
- <body>
- 
- <h1>My Tingo Chart</h1>
- 
- <div style="width: 50%">
- <canvas id="canvas" height="450" width="600"></canvas>
- </div>
+    <head>
 
-<!--  <script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Lasor curtter monitor">
+        <meta name="author" content="Cheryl Wang">
+
+        <title>laser cutter monitor</title>     
+
+        <!-- Bootstrap Core CSS -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <link href="css/main.css" rel="stylesheet">
+
+        <!-- Morris Charts CSS -->
+        <link href="css/plugins/morris.css" rel="stylesheet">
+
+        <!-- Custom Fonts -->
+        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+
+    </head>
+    <body>
+
+          <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header header-icon">
+                            Laser Cutter Monitor <small>Status Overview</small>
+                        </h1>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    <div class="col-lg-4 col-md-4">
+                        <div class="info-bubble">
+                            <h4> Temperature </h4>
+                            <div class="bubble-img normal">25.1</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="info-bubble">
+                            <h4> Machine Status </h4>
+                            <div class="img">
+                                <img alt="" src="images/cutter_available.png"></img>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                            <div class="info-bubble">
+                                <h4> Warning message sent </h4>
+                                <div class="mail-icon">6</div>
+                            </div>
+                    </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="morris-area-chart">
+                                    <div style="width: 100%">
+                                        <canvas id="canvas" height="450" width="600"></canvas>
+                                     </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+
+            </div>
+            <!-- /.container-fluid -->
+
+        </div>
+        <!-- /#page-wrapper -->
+
+ <script>
  window.onload =  function(){
 	initLineChart();
  }
@@ -52,7 +134,7 @@ var initLineChart = function(){
 	window.myLineChart = new Chart(ctx).Line(lineChartData, options);
 }
 
- </script> -->
+ </script>
 
-</body>
+    </body>
 </html>
