@@ -1,8 +1,7 @@
-var express = require('express');
-var app = express();
+var app = require('express').createServer;
 // var app = require('http').createServer(handler);
 var io = require('socket.io')(app);
-var fs = require('fs');
+// var fs = require('fs');
 var path = require('path');
 
 var Engine = require('tingodb')(),
@@ -37,7 +36,7 @@ var GPIO = require('onoff').Gpio,
         pir_pin = new GPIO(18, 'in', 'both');
 
 app.get("/", function(req, res){
-    res.send('hello world');
+    res.sendfile(__dirname + '/public/index-tingosocketchart.html');
 });
 
 // function handler(req, res) {
