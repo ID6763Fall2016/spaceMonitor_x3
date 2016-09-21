@@ -90,7 +90,7 @@ setInterval(function(){
         var vibr = data;
     
         // get temperature data from sensor
-        var raw_data = i2c.readWordSync(0x40);
+        var raw_data = i2c.readWordSync(0x40, 0x01);
         var temp = (raw_data >> 2) * 0.03215;
 
         // get motion data from sensor
