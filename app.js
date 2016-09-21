@@ -52,7 +52,7 @@ app.get("/", function(req, res){
     res.sendfile(__dirname + '/index.html');
 });
 
-app.listen(8000);
+server.listen(3000);
 
 io.on('connect', function(socket){
 	console.log("user connected to socket");
