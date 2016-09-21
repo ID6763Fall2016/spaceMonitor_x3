@@ -38,7 +38,7 @@ var GPIO = require('onoff').Gpio,
         pir_pin = new GPIO(18, 'in', 'both');
 
 app.get("/", function(req, res){
-    res.sendfile(__dirname + '/public/index-tingosocketchart.html');
+    res.sendfile(__dirname + '/index.html');
 });
 
 app.listen(8000);
