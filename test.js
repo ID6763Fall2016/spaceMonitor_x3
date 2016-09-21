@@ -36,7 +36,7 @@ setInterval(function(){
 	// console.log("DieTemp")
 	// console.log(temp);
 
-	pir_pin.watch(printState);
+	// pir_pin.watch(printState);
 
 }, 1000);
 
