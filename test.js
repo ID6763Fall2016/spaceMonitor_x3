@@ -7,17 +7,6 @@ raspi.init(function(){
 	console.log(i2c.readByteSync(0x40));
 });
 
-setInterval(function(){
-	var raw_data = i2c.readWordSync(0x40);
-	console.log("------ Temp -------");
-	console.log("raw_data");
-	console.log(raw_data);
-	var temp = (raw_data >> 2 ) * 0.03125;
-	
-	console.log("DieTemp")
-	console.log(temp);
-}, 1000);
-
 
 // Sensor 2: vibration sensor
 // ADC Data reading, analog to digital
@@ -32,6 +21,16 @@ var progGainAmp = '4096';
 var reading = 0;
 setInterval(function(){
    if(!adc.busy){
+
+   	var raw_data = i2c.readWordSync(0x40);
+	console.log("------ Temp -------");
+	console.log("raw_data");
+	console.log(raw_data);
+	var temp = (raw_data >> 2 ) * 0.03125;
+	
+	console.log("DieTemp")
+	console.log(temp);
+
 	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
 		console.log("------ Vibration -------");
 		console.log(data);
