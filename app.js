@@ -93,12 +93,12 @@ setInterval(function(){
         var vibr = data;
     
         // get temperature data from sensor
-        var raw_data = i2c.readWordSync(0x40, TMP007_TDIE);
+        var raw_data = i2c.readWordSync(0x40, TMP007_TDIE) & 0xFFFF;
         var temp = (raw_data >> 2) * 0.03215;
         console.log("Die temp raw data:     " + String(raw_data));
         console.log('Die temp data:     ' + String(temp));
 
-        var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ);
+        var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ) & 0xFFFF;
         var obj_temp = (raw_obj_data >> 2) * 0.03215;
         console.log("Die temp raw data:     " + String(raw_obj_data));
         console.log('Die temp data:     ' + String(obj_temp));
