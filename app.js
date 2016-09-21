@@ -86,9 +86,8 @@ var insertSample = function(temp, vibr, motion, theDate){
 
 setInterval(function(){
     // get vibration data from sensor
-    var vibr = 0;
     adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-        vibr = data;
+        var vibr = data;
     
         // get temperature data from sensor
         var raw_data = i2c.readWordSync(0x40);
@@ -97,6 +96,7 @@ setInterval(function(){
         // get motion data from sensor
         var motion = pir_pin.readSync();
         var getDate = new Date();
+        console.log(vibr);
         insertSample(temp, vibr, motion, getDate);
 
     }); 
