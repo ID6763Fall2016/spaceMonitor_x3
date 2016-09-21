@@ -73,6 +73,8 @@ io.on('connect', function(socket){
 
 var insertSample = function(temp, vibr, motion, theDate){
 	var sampleCollection = db.collection('monitor');
+    console.log("---");
+    console.log(vibr);
 	sampleCollection.insert({
 		'temperature': temp,
         'vibration': vibr,
@@ -96,7 +98,6 @@ setInterval(function(){
         // get motion data from sensor
         var motion = pir_pin.readSync();
         var getDate = new Date();
-        console.log(vibr);
         insertSample(temp, vibr, motion, getDate);
 
     }); 
