@@ -19,27 +19,27 @@ var samplesPerSecond = '250';
 var progGainAmp = '4096';
 
 var reading = 0;
-setInterval(function(){
-   if(!adc.busy){
+// setInterval(function(){
+//    if(!adc.busy){
 
-	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-		console.log("------ Vibration -------");
-		console.log(data);
-		});  
-	}
+// 	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+// 		console.log("------ Vibration -------");
+// 		console.log(data);
+// 		});  
+// 	}
 
-	var raw_data = i2c.readWordSync(0x40);
-	console.log("------ Temp -------");
-	console.log("raw_data");
-	console.log(raw_data);
-	var temp = (raw_data >> 2 ) * 0.03125;
+// 	var raw_data = i2c.readWordSync(0x40);
+// 	console.log("------ Temp -------");
+// 	console.log("raw_data");
+// 	console.log(raw_data);
+// 	var temp = (raw_data >> 2 ) * 0.03125;
 	
-	console.log("DieTemp")
-	console.log(temp);
+// 	console.log("DieTemp")
+// 	console.log(temp);
 
-	pir_pin.watch(printState);
+// 	pir_pin.watch(printState);
 
-}, 1000);
+// }, 1000);
 
 
 // Sensor 3: motion sensor from GPIO
