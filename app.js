@@ -41,47 +41,6 @@ app.get("/", function(req, res){
     res.sendfile(__dirname + '/public/index-tingosocketchart.html');
 });
 
-// function handler(req, res) {
-
-//     var filePath = req.url;
-
-//     if(filePath == '/'){
-//         filePath = __dirname + '/public/index-tingosocketchart.html';
-//     } else {
-//         filePath = __dirname + req.url;
-//     }
-
-//     var extname = path.extname(filePath);
-//     var contentType = 'text/html';
-
-//     switch(extname) {
-//         case '.js': contentType = 'text/javascript'; break;
-//         case '.css': contentType = 'text/css'; break;
-//     }
-
-//     path.exists(filePath, function(exists){
-
-//         if(exists) {
-//             fs.readFile(filePath, function(err, content){
-//                 res.writeHead(200, {'content-type': contentType});
-//                 res.end(content, 'utf-8');
-//             });
-//         }
-//         else {
-//             res.writeHead(404);
-//             res.end();
-//         }
-//     })
-
-//   //   fs.readFile(__dirname + '/public/index-tingosocketchart.html',
-// 		// function(err, data){
-//   //           res.setHeader('Content-Type', content_type);
-// 		// 	res.writeHead(200);
-// 		// 	res.end(data);
-// 		// });
-// 	console.log("user connected");
-// }
-
 app.listen(8000);
 
 io.on('connect', function(socket){
