@@ -90,7 +90,7 @@ setInterval(function(){
     if(!adc.busy){
         adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
             vibr = data;
-            console.log(vibr);
+            // console.log(vibr);
         });  
     }
     // get temperature data from sensor
