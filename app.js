@@ -1,6 +1,8 @@
-var app = require('express').createServer();
+var express = require('express');
+var app = express();
 // var app = require('http').createServer(handler);
-var io = require('socket.io')(app);
+var server = require('http').Server(app);
+var io = require('socket.io')(serve);
 // var fs = require('fs');
 var path = require('path');
 
