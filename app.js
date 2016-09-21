@@ -87,12 +87,10 @@ var insertSample = function(temp, vibr, motion, theDate){
 setInterval(function(){
     // get vibration data from sensor
     var vibr = 0;
-    if(!adc.busy){
-        adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-            vibr = data;
-            // console.log(vibr);
-        });  
-    }
+    adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+        vibr = data;
+        // console.log(vibr);
+    });  
     // get temperature data from sensor
     var raw_data = i2c.readWordSync(0x40);
     var temp = (raw_data >> 2) * 0.03215;
