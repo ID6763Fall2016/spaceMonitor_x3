@@ -72,7 +72,7 @@ io.on('connect', function(socket){
 });
 
 var insertSample = function(temp, vibr, motion, theDate){
-	var sampleCollection = db.collection('chartStuff');
+	var sampleCollection = db.collection('monitor');
 	sampleCollection.insert({
 		'temperature': temp,
         'vibration': vibr,
@@ -80,7 +80,7 @@ var insertSample = function(temp, vibr, motion, theDate){
 		'datetime': theDate
 	}, function(err, docResult){
 		assert.equal(err, null);
-		console.log("Inserted a sample into the chartStuff collection.")
+		console.log("Inserted a sample into the monitor collection.")
 	});
 };
 
@@ -103,7 +103,7 @@ setInterval(function(){
 }, 1000);
 
 var getLatestSamples = function(theCount, callback){
-	var sampleCollection = db.collection('chartStuff');
+	var sampleCollection = db.collection('monitor');
 	sampleCollection
 		.find()
 		.sort({'datetime': -1})
