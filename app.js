@@ -90,7 +90,8 @@ setInterval(function(){
     adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
         vibr = data;
         console.log(vibr);
-    });  
+    }); 
+    console.log(vibr); 
     // get temperature data from sensor
     var raw_data = i2c.readWordSync(0x40);
     var temp = (raw_data >> 2) * 0.03215;
