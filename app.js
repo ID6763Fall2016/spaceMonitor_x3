@@ -73,8 +73,6 @@ io.on('connect', function(socket){
 
 var insertSample = function(temp, vibr, motion, theDate){
 	var sampleCollection = db.collection('monitor');
-    console.log("---");
-    console.log(vibr);
 	sampleCollection.insert({
 		'temperature': temp,
         'vibration': vibr,
