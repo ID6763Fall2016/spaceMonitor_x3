@@ -1,10 +1,10 @@
 // Sensor 1: Temp 007 sensor
-// var raspi = require('raspi');
-// var I2C = require('raspi-i2c').I2C;
-// var i2c = new I2C();
-// raspi.init(function(){
-// 	console.log("Raspberry Pi Initializing...");
-// });
+var raspi = require('raspi');
+var I2C = require('raspi-i2c').I2C;
+var i2c = new I2C();
+raspi.init(function(){
+	console.log("Raspberry Pi Initializing...");
+});
 
 
 // Sensor 2: vibration sensor
@@ -27,29 +27,29 @@ setInterval(function(){
 		});  
 	}
 
-	// var raw_data = i2c.readWordSync(0x40);
-	// console.log("------ Temp -------");
-	// console.log("raw_data");
-	// console.log(raw_data);
-	// var temp = (raw_data >> 2 ) * 0.03125;
+	var raw_data = i2c.readWordSync(0x40);
+	console.log("------ Temp -------");
+	console.log("raw_data");
+	console.log(raw_data);
+	var temp = (raw_data >> 2 ) * 0.03125;
 	
-	// console.log("DieTemp")
-	// console.log(temp);
+	console.log("DieTemp")
+	console.log(temp);
 
-	// pir_pin.watch(printState);
+	pir_pin.watch(printState);
 
 }, 1000);
 
 
 // Sensor 3: motion sensor from GPIO
-// var GPIO = require('onoff').Gpio,
-//         pir_pin = new GPIO(18, 'in', 'both');
+var GPIO = require('onoff').Gpio,
+        pir_pin = new GPIO(18, 'in', 'both');
 
-// function printState(err, state){
-// 	var dt = new Date();
-// 	console.log("------ motion sensor -------");
-// 	console.log(dt.toLocaleDateString() + "  " + dt.toLocaleTimeString());
-// 	console.log(state);
-// }
+function printState(err, state){
+	var dt = new Date();
+	console.log("------ motion sensor -------");
+	console.log(dt.toLocaleDateString() + "  " + dt.toLocaleTimeString());
+	console.log(state);
+}
 // pir_pin.watch(printState);
 
