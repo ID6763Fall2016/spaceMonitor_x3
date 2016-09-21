@@ -9,6 +9,7 @@ raspi.init(function(){
 
 setInterval(function(){
 	var raw_data = i2c.readWordSync(0x40);
+	console.log("------ Temp -------");
 	console.log("raw_data");
 	console.log(raw_data);
 	var temp = (raw_data >> 2 ) * 0.03125;
