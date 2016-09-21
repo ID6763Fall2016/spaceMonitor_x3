@@ -1,5 +1,14 @@
 var express = require('express');
 var app = express();
+
+app.use("/fonts", express.static(__dirname + '/fonts'));
+app.use("/css", express.static(__dirname + '/css'));
+app.use("/js", express.static(__dirname + '/js'));
+app.use("/font-awesome", express.static(__dirname + '/font-awesome'));
+app.use("/images", express.static(__dirname + '/images'));
+
+
+app.use(express.static(__dirname));
 // var app = require('http').createServer(handler);
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
