@@ -22,7 +22,13 @@ var reading = 0;
 setInterval(function(){
    if(!adc.busy){
 
-   	var raw_data = i2c.readWordSync(0x40);
+	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+		console.log("------ Vibration -------");
+		console.log(data);
+		});  
+	}
+
+	var raw_data = i2c.readWordSync(0x40);
 	console.log("------ Temp -------");
 	console.log("raw_data");
 	console.log(raw_data);
@@ -31,24 +37,18 @@ setInterval(function(){
 	console.log("DieTemp")
 	console.log(temp);
 
-	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-		console.log("------ Vibration -------");
-		console.log(data);
-		});  
-	}
-	
 }, 1000);
 
 
 // Sensor 3: motion sensor from GPIO
-// var GPIO = require('onoff').Gpio,
-//         pir_pin = new GPIO(18, 'in', 'both');
+var GPIO = require('onoff').Gpio,
+        pir_pin = new GPIO(18, 'in', 'both');
 
-// function printState(err, state){
-// 	var dt = new Date();
-// 	console.log("------ motion sensor -------");
-// 	console.log(dt.toLocaleDateString() + "  " + dt.toLocaleTimeString());
-// 	console.log(state);
-// }
-// pir_pin.watch(printState);
+function printState(err, state){
+	var dt = new Date();
+	console.log("------ motion sensor -------");
+	console.log(dt.toLocaleDateString() + "  " + dt.toLocaleTimeString());
+	console.log(state);
+}
+pir_pin.watch(printState);
 
