@@ -3,7 +3,7 @@ var raspi = require('raspi');
 var I2C = require('raspi-i2c').I2C;
 var i2c = new I2C();
 raspi.init(function(){
-//	var i2c= new I2C();
+	var i2c= new I2C();
 	console.log(i2c.readByteSync(0x40));
 });
 
@@ -20,13 +20,13 @@ var progGainAmp = '4096';
 
 var reading = 0;
 setInterval(function(){
- //   if(!adc.busy){
+   if(!adc.busy){
 
-	// adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-	// 	console.log("------ Vibration -------");
-	// 	console.log(data);
-	// 	});  
-	// }
+	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+		console.log("------ Vibration -------");
+		console.log(data);
+		});  
+	}
 
 	var raw_data = i2c.readWordSync(0x40);
 	console.log("------ Temp -------");
