@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 // var app = require('http').createServer(handler);
 var server = require('http').Server(app);
-var io = require('socket.io')(serve);
+var io = require('socket.io')(server);
 // var fs = require('fs');
 var path = require('path');
 
