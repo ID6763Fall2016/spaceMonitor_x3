@@ -6,6 +6,7 @@ app.use("/css", express.static(__dirname + '/css'));
 app.use("/js", express.static(__dirname + '/js'));
 app.use("/font-awesome", express.static(__dirname + '/font-awesome'));
 app.use("/images", express.static(__dirname + '/images'));
+app.use("/node_modules/socket.io", express.static(__dirname + '/socket.io'));
 
 
 app.use(express.static(__dirname));
