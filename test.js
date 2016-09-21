@@ -20,13 +20,13 @@ var progGainAmp = '4096';
 
 var reading = 0;
 setInterval(function(){
-   if(!adc.busy){
+ //   if(!adc.busy){
 
-	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-		console.log("------ Vibration -------");
-		console.log(data);
-		});  
-	}
+	// adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+	// 	console.log("------ Vibration -------");
+	// 	console.log(data);
+	// 	});  
+	// }
 
 	var raw_data = i2c.readWordSync(0x40);
 	console.log("------ Temp -------");
