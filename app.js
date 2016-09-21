@@ -1,8 +1,6 @@
 var app = require('http').createServer(handler);
 var io = require('socket.io')(app);
 var fs = require('fs');
-var mime = require('mime'),
-    content_type = mime.lookup(filePath);
 
 var Engine = require('tingodb')(),
 assert = require('assert');
@@ -38,12 +36,43 @@ var GPIO = require('onoff').Gpio,
 
 
 function handler(req, res) {
-    fs.readFile(__dirname + '/public/index-tingosocketchart.html',
-		function(err, data){
-            res.setHeader('Content-Type', content_type);
-			res.writeHead(200);
-			res.end(data);
-		});
+
+    var filePath = req.url;
+
+    if(filePath == '/'){
+        filePath = __dirname + '/public/index-tingosocketchart.html';
+    } else {
+        filePath = __dirname + req.url;
+    }
+
+    var extname = path.extname(filePath);
+    var contentType = 'text/html';
+
+    switch(extname) {
+        case '.js': contentType = 'text/javascript'; break;
+        case '.css': contentType = 'text/css'; break;
+    }
+
+    path.exists(filePath, function(exists){
+
+        if(exists) {
+            fs.readFile(filePath, function(err, content){
+                res.writeHead(200, {'content-type': contentType});
+                res.end(content, 'utf-8');
+            });
+        }
+        else {
+            res.writeHead(404);
+            res.end();
+        }
+    })
+
+  //   fs.readFile(__dirname + '/public/index-tingosocketchart.html',
+		// function(err, data){
+  //           res.setHeader('Content-Type', content_type);
+		// 	res.writeHead(200);
+		// 	res.end(data);
+		// });
 	console.log("user connected");
 }
 
