@@ -61,7 +61,7 @@ io.on('connect', function(socket){
 				values.push(results[i].value);
 			}
 			socket.emit('latestSamples', values);
-			console.log(values);
+			// console.log(values);
 		});
 	}, 1000);
 	
@@ -84,14 +84,24 @@ var insertSample = function(temp, vibr, motion, theDate){
 	});
 };
 
+var TMP007_TDIE = 0x01;
+var TMP007_TOBJ = 0x03;
+
 setInterval(function(){
     // get vibration data from sensor
     adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
         var vibr = data;
     
         // get temperature data from sensor
-        var raw_data = i2c.readWordSync(0x40, 0x01);
+        var raw_data = i2c.readWordSync(0x40, TMP007_TDIE);
         var temp = (raw_data >> 2) * 0.03215;
+        console.log("Die temp raw data:     " + String(raw_data));
+        console.log('Die temp data:     ' + String(temp));
+
+        var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ);
+        var obj_temp = (raw_obj_data >> 2) * 0.03215;
+        console.log("Die temp raw data:     " + String(raw_obj_data));
+        console.log('Die temp data:     ' + String(obj_temp));
 
         // get motion data from sensor
         var motion = pir_pin.readSync();
