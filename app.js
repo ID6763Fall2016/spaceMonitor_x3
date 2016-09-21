@@ -1,6 +1,8 @@
 var app = require('http').createServer(handler);
 var io = require('socket.io')(app);
 var fs = require('fs');
+var mime = require('mime'),
+    content_type = mime.lookup(filePath);
 
 var Engine = require('tingodb')(),
 assert = require('assert');
@@ -36,8 +38,9 @@ var GPIO = require('onoff').Gpio,
 
 
 function handler(req, res) {
-	fs.readFile(__dirname + '/public/index-tingosocketchart.html',
+    fs.readFile(__dirname + '/public/index-tingosocketchart.html',
 		function(err, data){
+            res.setHeader('Content-Type', content_type);
 			res.writeHead(200);
 			res.end(data);
 		});
