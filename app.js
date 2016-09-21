@@ -86,7 +86,7 @@ var insertSample = function(temp, vibr, motion, theDate){
 
 setInterval(function(){
     // get vibration data from sensor
-    var vibr = "";
+    var vibr = 0;
     if(!adc.busy){
         adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
             vibr = data;
