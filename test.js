@@ -18,6 +18,7 @@ var samplesPerSecond = '250';
 var progGainAmp = '4096';
 
 var reading = 0;
+
 setInterval(function(){
    if(!adc.busy){
 
@@ -36,7 +37,7 @@ setInterval(function(){
 	console.log("DieTemp")
 	console.log(temp);
 
-	pir_pin.watch(printState);
+	pir_pin.readSync();
 
 }, 1000);
 

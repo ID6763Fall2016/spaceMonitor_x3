@@ -7,6 +7,34 @@ assert = require('assert');
 
 var db = new Engine.Db(__dirname + '/db', {});
 
+
+// Initializing sensors
+// Sensor 1: Temp 007 sensor
+var raspi = require('raspi');
+var I2C = require('raspi-i2c').I2C;
+var i2c = new I2C();
+raspi.init(function(){
+    console.log("Raspberry Pi Initializing...");
+});
+
+// Sensor 2: vibration sensor
+// ADC Data reading, analog to digital
+var ads1x15 = require('node-ads1x15');
+var chip = 1;
+var adc = new ads1x15(chip);
+
+var channel = 0;
+var samplesPerSecond = '250';
+var progGainAmp = '4096';
+
+var reading = 0;
+
+// Sensor 3: motion sensor from GPIO
+var GPIO = require('onoff').Gpio,
+        pir_pin = new GPIO(18, 'in', 'both');
+
+
+
 function handler(req, res) {
 	fs.readFile(__dirname + '/public/index-tingosocketchart.html',
 		function(err, data){
@@ -43,10 +71,12 @@ io.on('connect', function(socket){
 	});
 });
 
-var insertSample = function(theValue, theDate){
+var insertSample = function(temp, vibr, motion, theDate){
 	var sampleCollection = db.collection('chartStuff');
 	sampleCollection.insert({
-		'value': theValue,
+		'temperature': temp,
+        'vibration': vibr,
+        'motion': motion,
 		'datetime': theDate
 	}, function(err, docResult){
 		assert.equal(err, null);
@@ -55,10 +85,21 @@ var insertSample = function(theValue, theDate){
 };
 
 setInterval(function(){
+    // get vibration data from sensor
+    var vibr = "";
+    if(!adc.busy){
+        adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+            vibr = data;
+        });  
+    }
+    // get temperature data from sensor
+    var raw_data = i2c.readWordSync(0x40);
+    var temp = (raw_data >> 2) * 0.03215;
 
-	var makeValue = Math.random() * 100;
+    // get motion data from sensor
+    var motion = pir_pin.readSync();
 	var getDate = new Date();
-	insertSample(makeValue, getDate);
+	insertSample(temp, vibr, motion, getDate);
 }, 1000);
 
 var getLatestSamples = function(theCount, callback){
@@ -72,15 +113,3 @@ var getLatestSamples = function(theCount, callback){
 		});
 };
 
-
-
-//var express = require('express');
-//var app = express();
-
-//app.get('/', function(req, res){
-//    res.send('hello world!');
-//});
-
-//app.listen(3000, function(){
-//    console.log('Example app listening on port 3000!')
-//});
