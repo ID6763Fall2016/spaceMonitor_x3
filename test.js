@@ -1,9 +1,4 @@
-// button is attached to pin 17, LED to 18
-
-// Vibration sensor
-var ads1x15 = require('node-ads1x15');
-var chip = 1;
-var adc = new ads1x15(chip);
+// Sensor 1: Temp 007 sensor
 var raspi = require('raspi');
 var I2C = require('raspi-i2c').I2C;
 var i2c = new I2C();
@@ -23,6 +18,11 @@ setInterval(function(){
 }, 1000);
 
 
+// Sensor 2: vibration sensor
+// ADC Data reading, analog to digital
+var ads1x15 = require('node-ads1x15');
+var chip = 1;
+var adc = new ads1x15(chip);
 
 var channel = 0;
 var samplesPerSecond = '250';
@@ -32,6 +32,7 @@ var reading = 0;
 setInterval(function(){
    if(!adc.busy){
 	adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+		console.log("------ Vibration -------");
 		console.log(data);
 		});  
 	}
@@ -39,28 +40,15 @@ setInterval(function(){
 }, 1000);
 
 
-// var i2c = require('i2c');
-// var address = 0x40;
-// var wire = new i2c(address, {device:'/dev/i2c-1'});
+// Sensor 3: motion sensor from GPIO
+var GPIO = require('onoff').Gpio,
+        pir_pin = new GPIO(18, 'in', 'both');
 
-// var GPIO = require('onoff').Gpio,
-// 	led = new GPIO(12, 'out');
-// 	vibration = new GPIO(6, 'in', 'both');
-
-
-// define the callback function
-function light(err, state){
-	//check the state of the button
+function printState(err, state){
+	var dt = new Date();
+	console.log("------ motion sensor -------");
+	console.log(dt.toLocaleDateString() + "  " + dt.toLocaleTimeString());
 	console.log(state);
-	// 1 == pressed, 0 == not pressed
-	if(state == 1){
-		led.writeSync(1);
-		console.log("1");
-	}
-	else {
-		led.writeSync(0);
-		console.log("0");
-	}
-
 }
-// button.watch(light);
+pir_pin.watch(printState);
+
