@@ -53,7 +53,7 @@ app.get("/", function(req, res){
 
 server.listen(3000);
 
-var VIBR_THRESHOD = 600;
+var VIBR_THRESHOD = 555;
 
 
 var sampleCollection = db.collection('monitor');
@@ -72,7 +72,7 @@ io.on('connect', function(socket){
                 var temp = result[0].temperature.toFixed(1);
                 var vibr = result[0].vibration;
                 var machineStatus = 0;
-                if (vibr > 600)
+                if (vibr > VIBR_THRESHOD)
                     machineStatus = 1;
 
                 socket.emit('realData', [temp, vibr]);
@@ -95,18 +95,18 @@ io.on('connect', function(socket){
                     {
                         status = 1
                     }
-                    machineStatus.push(results[i].vibration);
+                    machineStatus.push(VIBR_THRESHOD);
                 }
             }
 
-            // for (var i=1; i< machineStatus.length - 1; i++)
-            // {
-            //     if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
-            //     {    
-            //         machineStatus[i] = machineStatus[i-1];
-            //     }
+            for (var i=1; i< machineStatus.length - 1; i++)
+            {
+                if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
+                {    
+                    machineStatus[i] = machineStatus[i-1];
+                }
 
-            // }
+            }
 
             socket.emit('latestSamples', temps);
             socket.emit("machineStatus", machineStatus);
