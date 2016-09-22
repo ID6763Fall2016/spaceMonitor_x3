@@ -9,14 +9,12 @@ app.use("/images", express.static(__dirname + '/images'));
 app.use("/node_modules/socket.io/node_modules/socket.io-client",
         express.static(__dirname + '/socket.io'));
 
-
-app.use(express.static(__dirname));
-// var app = require('http').createServer(handler);
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-// var fs = require('fs');
-var path = require('path');
 
+/*
+* Database initialization
+*/
 var Engine = require('tingodb')(),
 assert = require('assert');
 
@@ -25,53 +23,143 @@ var db = new Engine.Db(__dirname + '/db', {});
 
 // Initializing sensors
 // Sensor 1: Temp 007 sensor
-var raspi = require('raspi');
-var I2C = require('raspi-i2c').I2C;
-var i2c = new I2C();
-raspi.init(function(){
-    console.log("Raspberry Pi Initializing...");
-});
+// var raspi = require('raspi');
+// var I2C = require('raspi-i2c').I2C;
+// var i2c = new I2C();
+// raspi.init(function(){
+//     console.log("Raspberry Pi Initializing...");
+// });
 
-// Sensor 2: vibration sensor
-// ADC Data reading, analog to digital
-var ads1x15 = require('node-ads1x15');
-var chip = 1;
-var adc = new ads1x15(chip);
+// // Sensor 2: vibration sensor
+// // ADC Data reading, analog to digital
+// var ads1x15 = require('node-ads1x15');
+// var chip = 1;
+// var adc = new ads1x15(chip);
 
-var channel = 0;
-var samplesPerSecond = '250';
-var progGainAmp = '4096';
+// var channel = 0;
+// var samplesPerSecond = '250';
+// var progGainAmp = '4096';
 
-var reading = 0;
+// var reading = 0;
 
-// Sensor 3: motion sensor from GPIO
-var GPIO = require('onoff').Gpio,
-        pir_pin = new GPIO(18, 'in', 'both');
+// // Sensor 3: motion sensor from GPIO
+// var GPIO = require('onoff').Gpio,
+//         pir_pin = new GPIO(18, 'in', 'both');
 
 app.get("/", function(req, res){
-    res.sendfile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/index.html');
 });
+
 
 server.listen(3000);
 
+var sampleCollection = db.collection('monitor');
 io.on('connect', function(socket){
 	console.log("user connected to socket");
 	
 	socket.on('messageFromClientToServer', function(data){
-		console.log(data);
+		// console.log(data);
 	});
 
+    var sendRealTimeData = setInterval(function(){
+        getLatestSamples(1, function(result){
+            var temp = result[0].temperature.toFixed(1);
+            var vibr = result[0].vibration;
+            var machineStatus = 0;
+            if (vibr > 600)
+                machineStatus = 1;
+
+            socket.emit('realData', [temp, machineStatus]);
+
+        });
+    }, 200);
+
+    // Process & emit temperature data to client
+    // every data point will be shown on the client sside
+    // Frequency: 1s
 	var sendLatestSamples = setInterval(function(){
 		getLatestSamples(100, function(results){
-			var values = []
+			var temps = [];
 			for(var i=0; i<results.length; i++)
 			{
-				values.push(results[i].value);
+				temps.push(results[i].temperature);
 			}
-			socket.emit('latestSamples', values);
-			// console.log(values);
+			socket.emit('latestSamples', temps);
 		});
 	}, 1000);
+
+
+    var now = new Date();
+    var sampleNumber = now.getHours() * 3600 + now.getMinutes() * 60;
+    var date = now.getDate();
+    var hour = now.getHours();
+
+    // Process motion data
+    // 1/0 Flag switch if deteced motion
+    // People around of the day
+    // Frequency: 10 mins (1000 * 60 * 10)
+    var sendAccumulatedPeopleSamples = setInterval(function(){
+
+        var ppDensity = new Array(24+1).join('0').split('').map(parseFloat);
+
+        // One hours as one unit
+        for (var i = 0; i < 24; i++)
+        {
+            var motionNum = 0;
+            sampleCollection
+                .find({'date': date}, {'hour': String(i)})
+                .sort({'datetime': -1})
+                .toArray(function(err, results){
+                    if(results){
+                        for (var j = 1; j < results.length; j++){
+                            if(results[j].motion != results[j-1].motion)
+                            {
+                                motionNum += 1;
+                            }
+                        }
+                    }
+                });
+            ppDensity[i] = motionNum;
+        }
+
+        socket.emit('ppDensity', ppDensity);
+
+    }, 1000);
+
+
+    // Process vibration data
+    // Vibr > Threshold ==> cutter is working
+    // People around of the day
+    // Frequency: 1 mins (24 * 60 per day) -- To be done
+    var VIBR_THRESHOD = 600;
+    var sendAccumulatedPeopleSamples = setInterval(function(){
+       
+        //var machineStatus = new Array(24 * 60 +1).join('0').split('').map(parseFloat);
+
+        getLatestSamples(100, function(results){
+            var machineStatus = []
+            for (var i=0; i < results.length; i++){
+                var status = 0;
+                if(results[i].vibration > VIBR_THRESHOD)
+                {
+                    status = 1
+                }
+                machineStatus.push(status);
+            }
+
+            for (var i=1; i< machineStatus.length - 1; i++)
+            {
+                if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
+                {    
+                    machineStatus[i] = machineStatus[i-1];
+                }
+
+            }
+
+            socket.emit("machineStatus", machineStatus);
+        });
+    }, 1000);
+
 	
 	socket.on('disconnect', function(){
 		console.log('user disconnected from socket');
@@ -81,10 +169,21 @@ io.on('connect', function(socket){
 
 var insertSample = function(temp, vibr, motion, theDate){
 	var sampleCollection = db.collection('monitor');
+
+    // get time information
+    var month = theDate.getMonth() + 1; // start from 0
+    var date = theDate.getDate();
+    var hour = theDate.getHours();
+    var minutes = theDate.getMinutes();
+
 	sampleCollection.insert({
 		'temperature': temp,
         'vibration': vibr,
         'motion': motion,
+        'month': month,
+        'date': date,
+        'hour': hour,
+        'minutes': minutes,
 		'datetime': theDate
 	}, function(err, docResult){
 		assert.equal(err, null);
@@ -97,25 +196,35 @@ var TMP007_TOBJ = 0x03;
 
 setInterval(function(){
     // get vibration data from sensor
-    adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-        var vibr = data;
+    // adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+    //     var vibr = data;
     
-        // get temperature data from sensor
-        var raw_data = i2c.readWordSync(0x40, TMP007_TDIE) & 0xFFFF;
-        raw_data = ((raw_data << 8) & 0xFF00) + (raw_data >> 8)
-        var temp = (raw_data >> 2) * 0.03215;
+    //     // get temperature data from sensor
+    //     var raw_data = i2c.readWordSync(0x40, TMP007_TDIE) & 0xFFFF;
+    //     raw_data = ((raw_data << 8) & 0xFF00) + (raw_data >> 8)
+    //     var temp = (raw_data >> 2) * 0.03215;
 
-        var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ) & 0xFFFF;
-        raw_obj_data = ((raw_obj_data << 8) & 0xFF00) + (raw_obj_data >> 8)
-        var obj_temp = (raw_obj_data >> 2) * 0.03215;
+    //     var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ) & 0xFFFF;
+    //     raw_obj_data = ((raw_obj_data << 8) & 0xFF00) + (raw_obj_data >> 8)
+    //     var obj_temp = ((raw_obj_data >> 2) * 0.03215).toFixed(1);
 
-        // get motion data from sensor
-        var motion = pir_pin.readSync();
-        var getDate = new Date();
-        insertSample(obj_temp, vibr, motion, getDate);
+    //     // get motion data from sensor
+    //     var motion = pir_pin.readSync();
+    //     var getDate = new Date();
+    //     insertSample(obj_temp, vibr, motion, getDate);
 
-    }); 
+    // }); 
     
+    // Randon data
+    var obj_temp = Math.random() * 100;
+    var vibr = Math.random() * 1000;
+    var motion = Math.round(Math.random());
+    var getDate = new Date();
+
+
+
+    insertSample(obj_temp, vibr, motion, getDate);
+
 }, 1000);
 
 var getLatestSamples = function(theCount, callback){
@@ -124,7 +233,7 @@ var getLatestSamples = function(theCount, callback){
 		.find()
 		.sort({'datetime': -1})
 		.limit(theCount)
-		.toArray(function(err,docList){
+		.toArray(function(err, docList){
 			callback(docList);
 		});
 };

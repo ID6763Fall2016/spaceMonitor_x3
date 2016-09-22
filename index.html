@@ -26,7 +26,7 @@
         <script src="js/jquery.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.bundle.js"></script>
         <script src="/socket.io/socket.io.js"></script>
 
     </head>
@@ -50,21 +50,21 @@
                     <div class="col-lg-4 col-md-4">
                         <div class="info-bubble">
                             <h4> Temperature </h4>
-                            <div class="bubble-img normal">25.1</div>
+                            <div id="temp" class="bubble-img normal">25.1</div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="info-bubble">
                             <h4> Machine Status </h4>
                             <div class="img">
-                                <img alt="" src="images/cutter_available.png"></img>
+                                <img id="machine_status" alt="" src="images/cutter_available.png"></img>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4">
                             <div class="info-bubble">
                                 <h4> Warning message sent </h4>
-                                <div class="mail-icon">6</div>
+                                <div class="mail-icon warning">6</div>
                             </div>
                     </div>
                 <!-- /.row -->
@@ -74,12 +74,12 @@
 
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Temperature Chart</h3>
                             </div>
                             <div class="panel-body">
                                 <div id="morris-area-chart">
                                     <div style="width: 100%">
-                                        <canvas id="canvas" height="450" width="600"></canvas>
+                                        <canvas id="canvas" height="100" width="600"></canvas>
                                      </div>
 
                                 </div>
@@ -89,6 +89,45 @@
                 </div>
                 <!-- /.row -->
 
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Machine Status </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="morris-area-chart">
+                                    <div style="width: 100%">
+                                        <canvas id="canvas_vibr" height="80" width="600"></canvas>
+                                     </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+
+                <div class="row">
+                    <div class="col-lg-12">
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Population </h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="morris-area-chart">
+                                    <div style="width: 100%">
+                                        <canvas id="canvas_population" height="80" width="600"></canvas>
+                                     </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
 
             </div>
             <!-- /.container-fluid -->
@@ -99,17 +138,36 @@
  <script>
  window.onload =  function(){
     initLineChart();
+    initVibrLineChart();
  }
 
 var socket = io();
+
+socket.on('realData', function(realData){
+    var temp = realData[0];
+    var machineStatus = realData[1];
+
+    var tempNode = document.getElementById("temp").innerHTML = temp;
+    var machineImg = document.getElementById("machine_status");
+    if(machineStatus == 1){
+        machineImg.src = "images/cutter_available.png";
+    }
+    else
+    {
+        machineImg.src = "images/cutter_busy.png";
+    }
+    
+
+});
+
 var lineChartData = {
-    labels: Array(100).fill(0),
+    labels: Array.apply(null, {length: 100}).map(Number.call, Number),
     datasets: [
         {
-            label: "My first dataset",
-            fillColor: "rgba(220, 220, 220, 0.2)",
-            strokeColor: "rgba(220, 220, 220, 1)",
-            pointColor: "rgba(220, 220, 220, 1)",
+            label: "Temperature Data Chart",
+            backgroundColor: "rgba(130, 186, 252, 0.2)",
+            borderColor: "rgba(130, 186, 252, 1)",
+            pointColor: "rgba(130, 186, 252, 1)",
             pointHighlightFill: "#fff",
             pointStrokeColor: "#fff",
             pointHighlightStroke: "rgba(220, 220, 220, 1)",
@@ -119,23 +177,110 @@ var lineChartData = {
 }
 
 socket.on('latestSamples', function(incomingData){
-    console.log(incomingData);
     socket.emit('messageFromClientToServer', "received: "+incomingData);
     lineChartData.datasets[0].data = incomingData;
     initLineChart();
 });
 
-var initLineChart = function(){
-    var options = {
+
+var vibrLineChartData = {
+    labels: Array.apply(null, {length: 100}).map(Number.call, Number),
+    datasets:[
+        {
+
+            label: "Machine Status Chart",
+            fill: false,
+            borderWidth: 5,
+            backgroundColor : "rgba(130, 186, 252, 1)",
+            borderColor: "rgba(130, 186, 252, 1)",
+            pointColor: "rgba(130, 186, 252, 1)",
+            pointHighlightFill: "#fff",
+            pointStrokeColor: "#fff",
+            pointBorderWidth: 1,
+            // lineTension: 0.1,
+            pointRadius: 1,
+            pointHitRadius: 1,
+            pointHighlightStroke: "rgba(220, 220, 220, 1)",
+            data: Array(100).fill(0)
+        }
+    ]
+}
+
+socket.on('machineStatus', function(machineStatus){
+    socket.emit('messageFromClientToServer', "received: " + machineStatus);
+    vibrLineChartData.datasets[0].data = machineStatus;
+    initVibrLineChart();
+});
+
+
+var popLineChartData = {
+    labels: ['0am', '1am', '2am', '3am', '4am', '5am', '6am', '7am', '8am', '9am', '10am', '11am', '12pm',
+             '0pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm'],
+    datasets:[
+        {
+
+            label: "Population Density",
+            fill: false,
+            backgroundColor : "rgba(130, 186, 252, 1)",
+            borderColor: "rgba(130, 186, 252, 1)",
+            pointColor: "rgba(130, 186, 252, 1)",
+            pointHighlightFill: "#fff",
+            pointStrokeColor: "#fff",
+            pointBorderWidth: 1,
+            // lineTension: 0.1,
+            pointRadius: 1,
+            pointHitRadius: 1,
+            pointHighlightStroke: "rgba(220, 220, 220, 1)",
+            data: Array(100).fill(0)
+        }
+    ]
+}
+
+socket.on('ppDensity', function(ppDensity){
+    socket.emit("messageFromClientToServer", "received: " + ppDensity);
+    popLineChartData.datasets[0].data = ppDensity;
+    initPopLineChart();
+});
+
+
+
+
+var options = {
         animation: false,
-        responsive: true
+        responsive: true,
+        showXAxisLabel:false
     };
+
+var initLineChart = function(){
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
-    window.myLineChart = new Chart(ctx).Line(lineChartData, options);
+    window.myLineChart = new Chart(ctx,{
+        type: 'line',
+        data: lineChartData,
+        options: options
+    });
+}
+
+var initVibrLineChart = function() {
+    var canvas = document.getElementById("canvas_vibr");
+    var ctx = canvas.getContext("2d");
+    window.myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: vibrLineChartData,
+            options: options
+        });
+}
+
+var initPopLineChart = function(){
+    var canvas = document.getElementById("canvas_population");
+    var ctx = canvas.getContext("2d");
+    window.myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: popLineChartData,
+            options: options
+        });
 }
 
  </script>
-
     </body>
 </html>
