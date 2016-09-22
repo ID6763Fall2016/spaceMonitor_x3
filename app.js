@@ -201,6 +201,7 @@ setInterval(function(){
         var getDate = new Date();
 
         console.log("vibration: " + String(vibr));
+        console.log("Motion: " + String(motion));
 
         insertSample(temp, vibr, motion, getDate);
 
