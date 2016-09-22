@@ -200,6 +200,8 @@ setInterval(function(){
         var motion = pir_pin.readSync();
         var getDate = new Date();
 
+        console.log("vibration: " + String(vibr));
+
         insertSample(temp, vibr, motion, getDate);
 
     }); 
@@ -212,7 +214,7 @@ setInterval(function(){
     // var motion = Math.round(Math.random());
     // var getDate = new Date();
 
-    
+
 
 
 }, 1000);
