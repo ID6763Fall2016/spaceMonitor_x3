@@ -82,8 +82,6 @@ io.on('connect', function(socket){
         // Process & emit temperature data to client
         // every data point will be shown on the client sside
         getLatestSamples(100, function(results){
-            console.log("This is results:");
-            console.log(results);
             var temps = [];
             var machineStatus = [];
             var motions = []

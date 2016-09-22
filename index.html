@@ -149,6 +149,7 @@ socket.on('realData', function(realData){
 
     var tempNode = document.getElementById("temp").innerHTML = temp;
     var machineImg = document.getElementById("machine_status");
+    console.log("machine status" + String(machineStatus));
     if(machineStatus == 1){
         machineImg.src = "images/cutter_available.png";
     }
