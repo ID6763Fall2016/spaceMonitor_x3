@@ -90,10 +90,10 @@ io.on('connect', function(socket){
                 for(var i=0; i<results.length; i++)
                 {
                     temps.push(results[i].temperature);
-                    var status = 0;
+                    var status = 1;
                     if(results[i].vibration > VIBR_THRESHOD)
                     {
-                        status = 1
+                        status = 0
                     }
                     machineStatus.push(status);
                 }
