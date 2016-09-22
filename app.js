@@ -75,7 +75,7 @@ io.on('connect', function(socket){
                 if (vibr > 600)
                     machineStatus = 1;
 
-                socket.emit('realData', [temp, machineStatus]);
+                socket.emit('realData', [temp, vibr]);
             }
         });
 
