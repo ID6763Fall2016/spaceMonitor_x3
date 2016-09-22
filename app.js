@@ -196,8 +196,9 @@ var TMP007_TOBJ = 0x03;
 
 setInterval(function(){
     // get vibration data from sensor
+    var vibr;
     adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-        var vibr = data;
+        vibr = data;
 
     }); 
 
