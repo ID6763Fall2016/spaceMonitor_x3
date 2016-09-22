@@ -63,14 +63,16 @@ io.on('connect', function(socket){
 
     var sendRealTimeData = setInterval(function(){
         getLatestSamples(1, function(result){
-            console.log(result);
-            var temp = result[0].temperature.toFixed(1);
-            var vibr = result[0].vibration;
-            var machineStatus = 0;
-            if (vibr > 600)
-                machineStatus = 1;
+            if(result){
+                console.log(result);
+                var temp = result[0].temperature.toFixed(1);
+                var vibr = result[0].vibration;
+                var machineStatus = 0;
+                if (vibr > 600)
+                    machineStatus = 1;
 
             socket.emit('realData', [temp, machineStatus]);
+        }
 
         });
     }, 200);
@@ -225,7 +227,7 @@ setInterval(function(){
 
 
 
-    insertSample(obj_temp, vibr, motion, getDate);
+    insertSample(temp, vibr, motion, getDate);
 
 }, 1000);
 
