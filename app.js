@@ -23,28 +23,28 @@ var db = new Engine.Db(__dirname + '/db', {});
 
 // Initializing sensors
 // Sensor 1: Temp 007 sensor
-// var raspi = require('raspi');
-// var I2C = require('raspi-i2c').I2C;
-// var i2c = new I2C();
-// raspi.init(function(){
-//     console.log("Raspberry Pi Initializing...");
-// });
+var raspi = require('raspi');
+var I2C = require('raspi-i2c').I2C;
+var i2c = new I2C();
+raspi.init(function(){
+    console.log("Raspberry Pi Initializing...");
+});
 
-// // Sensor 2: vibration sensor
-// // ADC Data reading, analog to digital
-// var ads1x15 = require('node-ads1x15');
-// var chip = 1;
-// var adc = new ads1x15(chip);
+// Sensor 2: vibration sensor
+// ADC Data reading, analog to digital
+var ads1x15 = require('node-ads1x15');
+var chip = 1;
+var adc = new ads1x15(chip);
 
-// var channel = 0;
-// var samplesPerSecond = '250';
-// var progGainAmp = '4096';
+var channel = 0;
+var samplesPerSecond = '250';
+var progGainAmp = '4096';
 
-// var reading = 0;
+var reading = 0;
 
-// // Sensor 3: motion sensor from GPIO
-// var GPIO = require('onoff').Gpio,
-//         pir_pin = new GPIO(18, 'in', 'both');
+// Sensor 3: motion sensor from GPIO
+var GPIO = require('onoff').Gpio,
+        pir_pin = new GPIO(18, 'in', 'both');
 
 app.get("/", function(req, res){
     res.sendFile(__dirname + '/index.html');
