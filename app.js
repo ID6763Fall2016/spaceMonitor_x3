@@ -196,30 +196,30 @@ var TMP007_TOBJ = 0x03;
 
 setInterval(function(){
     // get vibration data from sensor
-    // adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
-    //     var vibr = data;
-    
-    //     // get temperature data from sensor
-    //     var raw_data = i2c.readWordSync(0x40, TMP007_TDIE) & 0xFFFF;
-    //     raw_data = ((raw_data << 8) & 0xFF00) + (raw_data >> 8)
-    //     var temp = (raw_data >> 2) * 0.03215;
+    adc.readADCSingleEnded(channel, progGainAmp, samplesPerSecond, function(err, data) {
+        var vibr = data;
 
-    //     var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ) & 0xFFFF;
-    //     raw_obj_data = ((raw_obj_data << 8) & 0xFF00) + (raw_obj_data >> 8)
-    //     var obj_temp = ((raw_obj_data >> 2) * 0.03215).toFixed(1);
+    }); 
 
-    //     // get motion data from sensor
-    //     var motion = pir_pin.readSync();
-    //     var getDate = new Date();
-    //     insertSample(obj_temp, vibr, motion, getDate);
+    // get temperature data from sensor
+    var raw_data = i2c.readWordSync(0x40, TMP007_TDIE) & 0xFFFF;
+    raw_data = ((raw_data << 8) & 0xFF00) + (raw_data >> 8)
+    var temp = (raw_data >> 2) * 0.03215;
 
-    // }); 
+    var raw_obj_data = i2c.readWordSync(0x40, TMP007_TOBJ) & 0xFFFF;
+    raw_obj_data = ((raw_obj_data << 8) & 0xFF00) + (raw_obj_data >> 8)
+    var obj_temp = ((raw_obj_data >> 2) * 0.03215).toFixed(1);
+
+    // get motion data from sensor
+    var motion = pir_pin.readSync();
+    var getDate = new Date();
+    // insertSample(obj_temp, vibr, motion, getDate);
     
     // Randon data
-    var obj_temp = Math.random() * 100;
-    var vibr = Math.random() * 1000;
-    var motion = Math.round(Math.random());
-    var getDate = new Date();
+    // var obj_temp = Math.random() * 100;
+    // var vibr = Math.random() * 1000;
+    // var motion = Math.round(Math.random());
+    // var getDate = new Date();
 
 
 
