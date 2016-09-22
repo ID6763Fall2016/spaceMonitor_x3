@@ -101,33 +101,33 @@ io.on('connect', function(socket){
     // 1/0 Flag switch if deteced motion
     // People around of the day
     // Frequency: 10 mins (1000 * 60 * 10)
-    var sendAccumulatedPeopleSamples = setInterval(function(){
+    // var sendAccumulatedPeopleSamples = setInterval(function(){
 
-        var ppDensity = new Array(24+1).join('0').split('').map(parseFloat);
+    //     var ppDensity = new Array(24+1).join('0').split('').map(parseFloat);
 
-        // One hours as one unit
-        for (var i = 0; i < 24; i++)
-        {
-            var motionNum = 0;
-            sampleCollection
-                .find({'date': date}, {'hour': String(i)})
-                .sort({'datetime': -1})
-                .toArray(function(err, results){
-                    if(results){
-                        for (var j = 1; j < results.length; j++){
-                            if(results[j].motion != results[j-1].motion)
-                            {
-                                motionNum += 1;
-                            }
-                        }
-                    }
-                });
-            ppDensity[i] = motionNum;
-        }
+    //     // One hours as one unit
+    //     for (var i = 0; i < 24; i++)
+    //     {
+    //         var motionNum = 0;
+    //         sampleCollection
+    //             .find({'date': date}, {'hour': String(i)})
+    //             .sort({'datetime': -1})
+    //             .toArray(function(err, results){
+    //                 if(results){
+    //                     for (var j = 1; j < results.length; j++){
+    //                         if(results[j].motion != results[j-1].motion)
+    //                         {
+    //                             motionNum += 1;
+    //                         }
+    //                     }
+    //                 }
+    //             });
+    //         ppDensity[i] = motionNum;
+    //     }
 
-        socket.emit('ppDensity', ppDensity);
+    //     socket.emit('ppDensity', ppDensity);
 
-    }, 1000);
+    // }, 1000);
 
 
     // Process vibration data

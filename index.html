@@ -236,11 +236,11 @@ var popLineChartData = {
     ]
 }
 
-socket.on('ppDensity', function(ppDensity){
-    socket.emit("messageFromClientToServer", "received: " + ppDensity);
-    popLineChartData.datasets[0].data = ppDensity;
-    initPopLineChart();
-});
+// socket.on('ppDensity', function(ppDensity){
+//     socket.emit("messageFromClientToServer", "received: " + ppDensity);
+//     popLineChartData.datasets[0].data = ppDensity;
+//     initPopLineChart();
+// });
 
 
 
