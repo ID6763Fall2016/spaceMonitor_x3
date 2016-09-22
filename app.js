@@ -84,25 +84,27 @@ io.on('connect', function(socket){
         getLatestSamples(100, function(results){
             var temps = [];
             var machineStatus = [];
-            for(var i=0; i<results.length; i++)
-            {
-                temps.push(results[i].temperature);
-                var status = 0;
-                if(results[i].vibration > VIBR_THRESHOD)
+            if(results){
+                for(var i=0; i<results.length; i++)
                 {
-                    status = 1
+                    temps.push(results[i].temperature);
+                    var status = 0;
+                    if(results[i].vibration > VIBR_THRESHOD)
+                    {
+                        status = 1
+                    }
+                    machineStatus.push(results[i].vibration);
                 }
-                machineStatus.push(status);
             }
 
-            for (var i=1; i< machineStatus.length - 1; i++)
-            {
-                if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
-                {    
-                    machineStatus[i] = machineStatus[i-1];
-                }
+            // for (var i=1; i< machineStatus.length - 1; i++)
+            // {
+            //     if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
+            //     {    
+            //         machineStatus[i] = machineStatus[i-1];
+            //     }
 
-            }
+            // }
 
             socket.emit('latestSamples', temps);
             socket.emit("machineStatus", machineStatus);
