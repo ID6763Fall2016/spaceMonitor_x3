@@ -204,9 +204,9 @@ setInterval(function(){
         var motion = pir_pin.readSync();
         var getDate = new Date();
 
-        // console.log("temperature: " + String(temp));
-        // console.log("vibration: " + String(vibr));
-        // console.log("Motion: " + String(motion));
+        console.log("temperature: " + String(temp));
+        console.log("vibration: " + String(vibr));
+        console.log("Motion: " + String(motion));
 
         insertSample(temp, vibr, motion, getDate);
 
