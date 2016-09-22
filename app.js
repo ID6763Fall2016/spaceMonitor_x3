@@ -95,7 +95,7 @@ io.on('connect', function(socket){
                     {
                         status = 1
                     }
-                    machineStatus.push(VIBR_THRESHOD);
+                    machineStatus.push(status);
                 }
             }
 
@@ -156,7 +156,7 @@ io.on('connect', function(socket){
 	
 	socket.on('disconnect', function(){
 		console.log('user disconnected from socket');
-		clearInterval(sendLatestSamples);
+		clearInterval(sendRealTimeData);
 	});
 });
 
