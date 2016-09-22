@@ -63,6 +63,7 @@ io.on('connect', function(socket){
 
     var sendRealTimeData = setInterval(function(){
         getLatestSamples(1, function(result){
+            console.log(result);
             var temp = result[0].temperature.toFixed(1);
             var vibr = result[0].vibration;
             var machineStatus = 0;
