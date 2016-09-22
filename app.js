@@ -53,6 +53,9 @@ app.get("/", function(req, res){
 
 server.listen(3000);
 
+var VIBR_THRESHOD = 600;
+
+
 var sampleCollection = db.collection('monitor');
 io.on('connect', function(socket){
 	console.log("user connected to socket");
@@ -62,6 +65,7 @@ io.on('connect', function(socket){
 	});
 
     var sendRealTimeData = setInterval(function(){
+        // the latest real time data
         getLatestSamples(1, function(result){
             if(result){
                 console.log(result);
@@ -71,25 +75,41 @@ io.on('connect', function(socket){
                 if (vibr > 600)
                     machineStatus = 1;
 
-            socket.emit('realData', [temp, machineStatus]);
-        }
-
+                socket.emit('realData', [temp, machineStatus]);
+            }
         });
-    }, 1000);
 
-    // Process & emit temperature data to client
-    // every data point will be shown on the client sside
-    // Frequency: 1s
-	var sendLatestSamples = setInterval(function(){
-		getLatestSamples(100, function(results){
-			var temps = [];
-			for(var i=0; i<results.length; i++)
-			{
-				temps.push(results[i].temperature);
-			}
-			socket.emit('latestSamples', temps);
-		});
-	}, 1000);
+        // Process & emit temperature data to client
+        // every data point will be shown on the client sside
+        getLatestSamples(100, function(results){
+            var temps = [];
+            var machineStatus = [];
+            for(var i=0; i<results.length; i++)
+            {
+                temps.push(results[i].temperature);
+                var status = 0;
+                if(results[i].vibration > VIBR_THRESHOD)
+                {
+                    status = 1
+                }
+                machineStatus.push(status);
+            }
+
+            for (var i=1; i< machineStatus.length - 1; i++)
+            {
+                if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
+                {    
+                    machineStatus[i] = machineStatus[i-1];
+                }
+
+            }
+
+            socket.emit('latestSamples', temps);
+            socket.emit("machineStatus", machineStatus);
+        });
+
+
+    }, 1000);
 
 
     var now = new Date();
@@ -128,40 +148,6 @@ io.on('connect', function(socket){
     //     socket.emit('ppDensity', ppDensity);
 
     // }, 1000);
-
-
-    // Process vibration data
-    // Vibr > Threshold ==> cutter is working
-    // People around of the day
-    // Frequency: 1 mins (24 * 60 per day) -- To be done
-    var VIBR_THRESHOD = 600;
-    var sendAccumulatedPeopleSamples = setInterval(function(){
-       
-        //var machineStatus = new Array(24 * 60 +1).join('0').split('').map(parseFloat);
-
-        getLatestSamples(100, function(results){
-            var machineStatus = []
-            for (var i=0; i < results.length; i++){
-                var status = 0;
-                if(results[i].vibration > VIBR_THRESHOD)
-                {
-                    status = 1
-                }
-                machineStatus.push(status);
-            }
-
-            for (var i=1; i< machineStatus.length - 1; i++)
-            {
-                if (machineStatus[i] != machineStatus[i-1] && machineStatus[i-1] == machineStatus[i+1])
-                {    
-                    machineStatus[i] = machineStatus[i-1];
-                }
-
-            }
-
-            socket.emit("machineStatus", machineStatus);
-        });
-    }, 1000);
 
 	
 	socket.on('disconnect', function(){
