@@ -86,10 +86,12 @@ io.on('connect', function(socket){
             console.log(results);
             var temps = [];
             var machineStatus = [];
+            var motions = []
             if(results){
                 for(var i=0; i<results.length; i++)
                 {
                     temps.push(results[i].temperature);
+                    motions.push(results[i].motion);
                     var status = 1;
                     if(results[i].vibration > VIBR_THRESHOD)
                     {
@@ -110,6 +112,7 @@ io.on('connect', function(socket){
 
             socket.emit('latestSamples', temps);
             socket.emit("machineStatus", machineStatus);
+            socket.emit('ppDensity', motions);
         });
 
 
