@@ -75,7 +75,7 @@ io.on('connect', function(socket){
         }
 
         });
-    }, 200);
+    }, 1000);
 
     // Process & emit temperature data to client
     // every data point will be shown on the client sside
