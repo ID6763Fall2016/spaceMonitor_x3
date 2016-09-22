@@ -71,11 +71,11 @@ io.on('connect', function(socket){
                 console.log(result);
                 var temp = result[0].temperature.toFixed(1);
                 var vibr = result[0].vibration;
-                var machineStatus = 0;
+                var machineStatus = 1;
                 if (vibr > VIBR_THRESHOD)
-                    machineStatus = 1;
+                    machineStatus = 0;
 
-                socket.emit('realData', [temp, vibr]);
+                socket.emit('realData', [temp, machineStatus]);
             }
         });
 
